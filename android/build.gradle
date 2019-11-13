@@ -32,3 +32,6 @@ android {
         disable 'InvalidPackage'
     }
 }
+dependencies {
+    implementation 'com.facebook.android:facebook-share:[5,6)'
+}
