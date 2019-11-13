@@ -11,7 +11,7 @@ class KrisTestShare {
   }
 
   //share to facebook
-  static Future<String> shareFacebook(
+  Future<String> shareFacebook(
       {String msg = '', String url = ''}) async {
     final Map<String, Object> arguments = Map<String, dynamic>();
     arguments.putIfAbsent('msg', () => msg);
