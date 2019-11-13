@@ -5,9 +5,12 @@ PODS:
   - FBSDKCoreKit/Basics (5.0.2)
   - FBSDKCoreKit/Core (5.0.2):
     - FBSDKCoreKit/Basics
+  - FBSDKShareKit (5.0.2):
+    - FBSDKCoreKit (~> 5.0)
   - Flutter (1.0.0)
   - kris_test_share (0.0.1):
     - FBSDKCoreKit
+    - FBSDKShareKit
     - Flutter
 
 DEPENDENCIES:
@@ -17,6 +20,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - FBSDKCoreKit
+    - FBSDKShareKit
 
 EXTERNAL SOURCES:
   Flutter:
@@ -26,8 +30,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   FBSDKCoreKit: 3e41c402eb64ea7799c71833ff9e5690f27b9c42
+  FBSDKShareKit: 8695bbb97c18a381bbf2851a3f24f95a59121b82
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  kris_test_share: a5370e245971cbef7d918173182852820dfc658f
+  kris_test_share: 7df6c1c2fcd63d9eb9aaae383a2c5f21852aadcf
 
 PODFILE CHECKSUM: 64b2109b760ac9073c864e2a8278e6464efaa219
 
