@@ -39,6 +39,7 @@ class _MyAppState extends State<MyApp> {
       _platformVersion = platformVersion;
     });
   }
+  String msg = 'hello,this is my github:https://github.com/lizhuoyuan';
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +48,30 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+        body: Container(
+            width: double.infinity,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  // Image.memory(
+                  //   base64.decode(base64Image.split(',')[1]),
+                  //   height: 312,
+                  //   width: 175.3,
+                  //   fit: BoxFit.fill,
+                  //   gaplessPlayback: true,
+                  // ),
+                  SizedBox(height: 30),
+                  RaisedButton(
+                    child: Text('share to twitter'),
+                    onPressed: () async {
+                      var response = await KrisTestShare().shareFacebook(
+                          url: 'https://github.com/lizhuoyuan', msg: msg);
+                      if (response == 'success') {
+                        print('分享回调：' + response);
+                      }
+                    },
+                  ),
+                ])),
       ),
     );
   }
