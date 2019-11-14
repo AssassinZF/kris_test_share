@@ -41,11 +41,6 @@ public class KrisTestSharePlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-//    if (call.method.equals("getPlatformVersion")) {
-//      result.success("Android " + android.os.Build.VERSION.RELEASE);
-//    } else {
-//      result.notImplemented();
-//    }
     String url, msg;
 
     switch (call.method){
@@ -68,7 +63,7 @@ public class KrisTestSharePlugin implements MethodCallHandler {
    * @param msg    String
    * @param result Result
    */
-  private void shareToFacebook(String url, String msg, Result result) {
+  private void shareToFacebook(String url, String msg, final Result resultcallback) {
 
     ShareDialog shareDialog = new ShareDialog(activity);
     // this part is optional
@@ -76,16 +71,18 @@ public class KrisTestSharePlugin implements MethodCallHandler {
       @Override
       public void onSuccess(Sharer.Result result) {
         System.out.println("--------------------success");
+        resultcallback.success("分享成功");
       }
 
       @Override
       public void onCancel() {
-        System.out.println("-----------------onCancel");
+        System.out.println("-----------------onCancel");resultcallback.success("分享取消");
       }
 
       @Override
       public void onError(FacebookException error) {
         System.out.println("---------------onError");
+        resultcallback.success("分享失败");
       }
     });
 
@@ -95,9 +92,9 @@ public class KrisTestSharePlugin implements MethodCallHandler {
             .build();
     if (ShareDialog.canShow(ShareLinkContent.class)) {
       shareDialog.show(content);
-      result.success("success");
+      resultcallback.success("分享成功");
     }else{
-      result.success("打不开");
+      resultcallback.success("分享失败");
 
     }
   }

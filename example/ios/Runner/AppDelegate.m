@@ -27,4 +27,7 @@
     // Add any custom logic here.
     return handled;
 }
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    [FBSDKAppEvents activateApp];
+}
 @end

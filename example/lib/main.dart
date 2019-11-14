@@ -39,7 +39,9 @@ class _MyAppState extends State<MyApp> {
       _platformVersion = platformVersion;
     });
   }
-  String msg = 'hello,this is my github:https://github.com/lizhuoyuan';
+
+  String msg =
+      'hello,this is my github:https://github.com/AssassinZF?tab=repositories';
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +64,32 @@ class _MyAppState extends State<MyApp> {
                   // ),
                   SizedBox(height: 30),
                   RaisedButton(
-                    child: Text('share to twitter'),
+                    child: Text('share to facebook'),
                     onPressed: () async {
                       var response = await KrisTestShare().shareFacebook(
-                          url: 'https://github.com/lizhuoyuan', msg: msg);
-                      if (response == 'success') {
-                        print('分享回调：' + response);
-                      }
+                          url: 'https://github.com/AssassinZF?tab=repositories',
+                          msg: msg);
+                      print('分享回调：' + response);
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  RaisedButton(
+                    child: Text('share to twitter'),
+                    onPressed: () async {
+                      var response = await KrisTestShare().shareTwitter(
+                          url: 'https://github.com/AssassinZF?tab=repositories',
+                          msg: msg);
+                      print('分享回调：' + response);
+                    },
+                  ),
+                  SizedBox(height: 30),
+                  RaisedButton(
+                    child: Text('share to whatapp'),
+                    onPressed: () async {
+                      var response = await KrisTestShare().shareWhatapp(
+                          url: 'https://github.com/AssassinZF?tab=repositories',
+                          msg: msg);
+                      print('分享回调：' + response);
                     },
                   ),
                 ])),

@@ -3,74 +3,99 @@
 #import <FBSDKShareKit/FBSDKShareLinkContent.h>
 #import <FBSDKShareKit/FBSDKShareDialog.h>
 
-@implementation KrisTestSharePlugin
+@interface KrisTestSharePlugin()<FBSDKSharingDelegate>
+
+@end
+
+@implementation KrisTestSharePlugin{
+    UIViewController *_viewController;
+    FlutterResult _callbackResult;
+}
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"kris_test_share"
             binaryMessenger:[registrar messenger]];
-  KrisTestSharePlugin* instance = [[KrisTestSharePlugin alloc] init];
+    UIViewController *vc =
+    [UIApplication sharedApplication].delegate.window.rootViewController;
+
+  KrisTestSharePlugin* instance = [[KrisTestSharePlugin alloc] initWithViewController:vc];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
+- (instancetype)initWithViewController:(UIViewController *)viewController {
+    self = [super init];
+    if (self) {
+        _viewController = viewController;
+    }
+    return self;
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+    _callbackResult = result;
   if ([@"getPlatformVersion" isEqualToString:call.method]) {
     result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
   }else if([@"shareFacebook" isEqualToString:call.method]){
-      //构建内容
-      FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
-      content.contentURL = [NSURL URLWithString:@"https://developers.facebook.com"];
-//      FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
-//      dialog.fromViewController = self;
-//      dialog.content = content;
-//      dialog.mode = FBSDKShareDialogModeShareSheet;
-//      [dialog show];
-      //      FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
-//      dialog.fromViewController = self;
-//      dialog.content = content;
-//      dialog.mode = FBSDKShareDialogModeShareSheet;
-//      [dialog show];
+      [self facebookShareWithMessage:call.arguments];
+  }else if([@"shareWhatapp" isEqualToString:call.method]){
+      [self whatAppShareWithMessage:call.arguments];
+
   }
   else {
     result(FlutterMethodNotImplemented);
   }
 }
 
+- (void)whatAppShareWithMessage:(id)message {
+    NSDictionary *param = (NSDictionary *)message;
+//    NSString *url = param[@"url"];
+    NSString *msg = param[@"msg"];
+    NSString *url = [NSString stringWithFormat:@"whatsapp://send?text=%@", [msg stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
+    NSURL *whatsappURL = [NSURL URLWithString: url];
+    
+    if ([[UIApplication sharedApplication] canOpenURL: whatsappURL]) {
+        [[UIApplication sharedApplication] openURL: whatsappURL];
+        _callbackResult(@"分享成功");
+    } else {
+        // Cannot open whatsapp
+        _callbackResult(@"分享失败");
+    }
+
+}
 
 - (void)facebookShareWithMessage:(id)message {
-//    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-//    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-//
-//    NSString *contentUrlString = dictionary[@"content_url"];
-//    NSString *imageUrlString = dictionary[@"image_url"];
-//    NSString *description = dictionary[@"description"];
-//    NSString *title = dictionary[@"title"];
-//    NSString *quote = dictionary[@"quote"];
-//
-//    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
-//    content.contentURL = [NSURL URLWithString:contentUrlString];
-////    content.imageURL = [NSURL URLWithString:imageUrlString];
-//    content.contentDescription = description;
-//    content.contentTitle = title;
-//    content.quote = quote;
-//
-//    FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
-//    dialog.shareContent = content;
-//    dialog.fromViewController = self;
-//    dialog.delegate = self;
-//    dialog.mode = FBSDKShareDialogModeNative;
-//    [dialog show];
+    NSDictionary *param = (NSDictionary *)message;
+    NSString *url = param[@"url"];
+    NSString *msg = param[@"msg"];
+    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+    content.contentURL = [NSURL URLWithString:url];
+    content.quote = msg;
+    FBSDKShareDialog *dialog = [[FBSDKShareDialog alloc] init];
+    dialog.fromViewController = _viewController;
+    dialog.shareContent = content;
+    dialog.delegate = self;
+    dialog.mode = FBSDKShareDialogModeNative;
+    [dialog show];
+
 }
 
 #pragma mark - FaceBook Share Delegate
 - (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results {
+    if (results.count < 1) {
+        _callbackResult(@"取消分享");
+        return;
+
+    }
     NSString *postId = results[@"postId"];
     FBSDKShareDialog *dialog = (FBSDKShareDialog *)sharer;
     if (dialog.mode == FBSDKShareDialogModeBrowser && (postId == nil || [postId isEqualToString:@""])) {
         // 如果使用webview分享的，但postId是空的，
         // 这种情况是用户点击了『完成』按钮，并没有真的分享
         NSLog(@"Cancel");
+        _callbackResult(@"取消分享");
     } else {
         NSLog(@"Success");
+        _callbackResult(@"分享成功");
     }
     
 }
@@ -84,11 +109,13 @@
         [dialog show];
     } else {
         NSLog(@"Failure");
+        _callbackResult(@"分享失败");
     }
 }
 
 - (void)sharerDidCancel:(id<FBSDKSharing>)sharer {
     NSLog(@"Cancel");
+    _callbackResult(@"取消分享");
 }
 
 @end
