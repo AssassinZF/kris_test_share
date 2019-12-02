@@ -48,7 +48,6 @@ public class KrisTestSharePlugin implements MethodCallHandler {
         url = call.argument("url");
         msg = call.argument("msg");
         shareToFacebook(url, msg, result);
-
       }break;
       default:
         result.notImplemented();
